@@ -65,7 +65,8 @@ typedef struct{
 #define BIRD_MELFEAT 64
 #define BIRD_MINFREQ 50
 #define BIRD_MAXFREQ 16000
-#define BIRD_LENPRED (((BIRD_LENSPEC - 6)/2 - 6)/2 -6)/2 // 3 layers hopsize 256 kernel 5
+#define BIRD_LENPRED (((BIRD_LENSPEC - 5)/2 + 1 - 5)/2 + 1 - 5)/2 + 1 // 3 layers hopsize 256 kernel 5
+#define CACHA_BIRD_LENPRED (((BIRD_LENSPEC - 7)/2 + 1 - 7)/2 + 1 - 7)/2 + 1 // For the birds that use the cacha archi
 #define BIRD_RAPPORT_NSAMPLESTOSEND 10 // a sample is positionned at a high pred from the cnn, we extract the audio signal arround to send back via network => PAS ENCORE TROUVE
 #define BIRD_RAPPORT_SAMPLE_RATE 128000 // => PAS ENCORE TROUVE
 #define BIRD_RAPPORT_SAMPLESPERSAMPLE 12800 // number of audio samples per high pred sample to send back => PAS ENCORE TROUVE
@@ -80,7 +81,7 @@ typedef struct{
 #define CHIRO_MELFEAT 64
 #define CHIRO_MINFREQ 10000
 #define CHIRO_MAXFREQ 128000
-#define CHIRO_LENPRED (((CHIRO_LENSPEC - 6)/2 - 6)/2 -6)/2 // 3 layers hopsize 256 kernel 5
+#define CHIRO_LENPRED (((CHIRO_LENSPEC - 7)/2 + 1 - 7)/2 + 1 - 7)/2 + 1 // 3 layers hopsize 256 kernel 5
 #define CHIRO_RAPPORT_NSAMPLESTOSEND 10 // a sample is positionned at a high pred from the cnn, we extract the audio signal arround to send back via network => PAS ENCORE TROUVE
 #define CHIRO_RAPPORT_SAMPLE_RATE 128000 // => PAS ENCORE TROUVE
 #define CHIRO_RAPPORT_SAMPLESPERSAMPLE 12800 // number of audio samples per high pred sample to send back => PAS ENCORE TROUVE
@@ -97,13 +98,13 @@ typedef struct{
     float predsCurrucaCommunis[BIRD_LENPRED]; // len of preds for Curruca communis
     float predsEmberizaCirlus[BIRD_LENPRED]; // len of preds for Emberiza cirlus
     float predsLullulaArborea[BIRD_LENPRED]; // len of preds for Lullula arborea
-    float predsEmberizaCalandra[BIRD_LENPRED]; // len of preds for Emberiza calandra
+    float predsEmberizaCalandra[CACHA_BIRD_LENPRED]; // len of preds for Emberiza calandra
     float predsSaxicolaRubetra[BIRD_LENPRED]; // len of preds for Saxicola rubetra
     float predsEmberizaCitrinella[BIRD_LENPRED]; // len of preds for Emberiza citrinella
-    float predsEmberizaHortulana[BIRD_LENPRED]; // len of preds for Emberiza hortulana
-    float predsCoturnixCoturnix[BIRD_LENPRED]; // len of preds for Coturnix coturnix
+    float predsEmberizaHortulana[CACHA_BIRD_LENPRED]; // len of preds for Emberiza hortulana
+    float predsCoturnixCoturnix[CACHA_BIRD_LENPRED]; // len of preds for Coturnix coturnix
     float predsAlaudaArvensis[BIRD_LENPRED]; // len of preds for Alauda arvensis
-    float predsAnthusPratensis[BIRD_LENPRED]; // len of preds for Anthus pratensis
+    float predsAnthusPratensis[CACHA_BIRD_LENPRED]; // len of preds for Anthus pratensis
     float predsPipistrellus[CHIRO_LENPRED];
     float predsRhinolophus[CHIRO_LENPRED];
     float predsNyctalus[CHIRO_LENPRED];
