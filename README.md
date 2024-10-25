@@ -32,7 +32,22 @@ Side note : To convert several .log files in a folder on Linux (when working on 
 `bash log2wav_file.sh /path/to/your/log/folder /path/to/the/output/directory`  
 This code will always extract both .csv and .wav files and put them in the same output folder.
 
+### Compilation
+
+If the compiled version of the log2Wav program does not work on your machine you might want to recompile it to suit your local libraries. For this you need first to verify that you have a version of gcc (the compiler) installed on your computer. Then simply open a terminal on the QHB_Tools repository and run the following command :
+```
+gcc Log2Wav/*.c -o Release/log2Wav_{Your computer name, model or the cube version if on a server} -lm
+```
+The "-lm" part links the math library. Do not forget it as it is important for the code to run correctly.
+
 ## Archives
 
 This folder contains the executables for older versions of the log2wav program.
 
+## Doc
+
+This folder contains the user manuals and technical documentation for the QHB audio cards (stating at v2).
+
+## QHB_Scripts
+
+This folder contains examples of the JCONFIG.CFG files for each QHB version (starting at v2).
