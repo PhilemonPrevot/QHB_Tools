@@ -6,6 +6,7 @@ import re
 import argparse
 import os
 import pandas as pd
+from gps_to_dist import get_coastline, plot_positions
 
 ###############
 ### METHODS ###
@@ -139,6 +140,32 @@ def extract_datetime(filename):
     return date_str + time_str
 
 
+def save_plot_pipeline(gps_data, file, args):
+    full_date_match = re.search(
+        r"(\d{4})(?:-?)(\d{2})(?:-?)(\d{2})[_](\d{4})(?:-?)(\d{2})(?:-?)(\d{2})",
+        file,
+    ).group(0)
+
+    min_lat = gps_data["Lat"].min(skipna=True)
+    min_lon = gps_data["Lon"].min(skipna=True)
+    max_lat = gps_data["Lat"].max(skipna=True)
+    max_lon = gps_data["Lon"].max(skipna=True)
+    lat_scale = 0.2 * (max_lat - min_lat)
+    lon_scale = 0.2 * (max_lon - min_lon)
+
+    limits = [
+        min_lat - lat_scale,
+        min_lon - lon_scale,
+        max_lat + lat_scale,
+        max_lon + lon_scale,
+    ]
+
+    coastline = get_coastline(limits)
+
+    gps_data = gps_data.rename(columns={"Lat": "Lat file1", "Lon": "Lon file1"})
+    plot_positions(gps_data, coastline, limits, full_date_match, args)
+
+
 ########################
 ### ARGUMENTS PARSER ###
 ########################
@@ -221,6 +248,10 @@ def main(args):
             pps_data, gps_data = pps_gps_data_extraction(qhb_csv)
             write_data(args.output_path, file, pps_data, gps_data)
 
+            if args.save_plot:
+                save_plot_pipeline(gps_data, file, args)
+
+        file = files[0]
         if not args.merge_data:
             return 0
 
@@ -228,10 +259,14 @@ def main(args):
         if args.output_path is None:
             args.output_path = os.path.dirname(args.input_path)
         qhb_csv = pd.read_csv(args.input_path)
+        file = args.input_path
         print(qhb_csv)
 
     pps_data, gps_data = pps_gps_data_extraction(qhb_csv)
     write_data(args.output_path, args.input_path, pps_data, gps_data)
+
+    if args.save_plot:
+        save_plot_pipeline(gps_data, file, args)
 
 
 if __name__ == "__main__":

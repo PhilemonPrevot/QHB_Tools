@@ -268,15 +268,16 @@ def plot_positions(distance_df, coastline, limits, date, args):
         alpha=0.5,
         marker="+",
     )
-    plt.scatter(
-        distance_df["Lon file2"],
-        distance_df["Lat file2"],
-        c=distance_df["DateTime"],
-        cmap="jet",
-        label="File 2 Positions",
-        alpha=0.5,
-        marker="o",
-    )
+    if "Lon file2" in distance_df.columns and "Lat file2" in distance_df.columns:
+        plt.scatter(
+            distance_df["Lon file2"],
+            distance_df["Lat file2"],
+            c=distance_df["DateTime"],
+            cmap="jet",
+            label="File 2 Positions",
+            alpha=0.5,
+            marker="o",
+        )
 
     # for idx in range(len(distance_df) - 1):
     #     plt.arrow(
