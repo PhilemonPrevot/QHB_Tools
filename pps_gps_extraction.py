@@ -6,7 +6,7 @@ import re
 import argparse
 import os
 import pandas as pd
-from gps_to_dist import get_coastline, plot_positions
+from gps_to_dist import get_coastline, plot_positions, parse_coordinates
 
 ###############
 ### METHODS ###
@@ -142,9 +142,22 @@ def extract_datetime(filename):
 
 def save_plot_pipeline(gps_data, file, args):
     full_date_match = re.search(
-        r"(\d{4})(?:-?)(\d{2})(?:-?)(\d{2})[_](\d{4})(?:-?)(\d{2})(?:-?)(\d{2})",
+        r"(\d{4})(?:-?)(\d{2})(?:-?)(\d{2})[_](\d{2})(?:-?)(\d{2})(?:-?)(\d{2})",
         file,
     ).group(0)
+    
+    gps_data["Date"] = gps_data["Date"].str.replace(r"^00(\d{2})", r"20\1", regex=True)
+    gps_data["DateTime"] = pd.to_datetime(
+        gps_data["Date"] + " " + gps_data["Heure"], format="%Y/%m/%d %H:%M:%S"
+    )
+    gps_data.loc[gps_data["Fix"] == "fix:1", "Lat"] = gps_data.loc[gps_data["Fix"] == "fix:1", "Lat"].apply(
+        parse_coordinates
+    )
+    gps_data.loc[gps_data["Fix"] == "fix:1", "Lon"] = gps_data.loc[gps_data["Fix"] == "fix:1", "Lon"].apply(
+        parse_coordinates
+    )
+    gps_data["Speed"] = gps_data["Speed"].str.replace("speed:", "")
+    gps_data = gps_data.sort_values(by="DateTime").reset_index(drop=True)
 
     min_lat = gps_data["Lat"].min(skipna=True)
     min_lon = gps_data["Lon"].min(skipna=True)
@@ -163,6 +176,7 @@ def save_plot_pipeline(gps_data, file, args):
     coastline = get_coastline(limits)
 
     gps_data = gps_data.rename(columns={"Lat": "Lat file1", "Lon": "Lon file1"})
+    args.file1 = file
     plot_positions(gps_data, coastline, limits, full_date_match, args)
 
 

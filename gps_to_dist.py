@@ -105,7 +105,7 @@ def load_and_process(file_path):
     Returns:
     pd.DataFrame
         A DataFrame containing the following columns:
-        - 'Datetime': Combined date and time in datetime format.
+        - 'DateTime': Combined date and time in datetime format.
         - 'Lat': Latitude in decimal degrees.
         - 'Lon': Longitude in decimal degrees.
         - 'Speed': Speed of the GPS unit.
@@ -131,7 +131,7 @@ def load_and_process(file_path):
     # Replace any year that starts with '00' to '20' to handle '0024' to '2024' conversions, etc.
     df["Date"] = df["Date"].str.replace(r"^00(\d{2})", r"20\1", regex=True)
 
-    df["Datetime"] = pd.to_datetime(
+    df["DateTime"] = pd.to_datetime(
         df["Date"] + " " + df["Heure"], format="%Y/%m/%d %H:%M:%S"
     )
     df.loc[df["Fix"] == "fix:1", "Lat"] = df.loc[df["Fix"] == "fix:1", "Lat"].apply(
@@ -142,8 +142,8 @@ def load_and_process(file_path):
     )
     df["Speed"] = df["Speed"].str.replace("speed:", "")
 
-    df = df.sort_values(by="Datetime").reset_index(drop=True)
-    return df[["Datetime", "Lat", "Lon", "Speed"]]
+    df = df.sort_values(by="DateTime").reset_index(drop=True)
+    return df[["DateTime", "Lat", "Lon", "Speed"]]
 
 
 def calculate_distances(df1, df2):
@@ -152,24 +152,24 @@ def calculate_distances(df1, df2):
 
     Args:
     df1 : pd.DataFrame
-        The first DataFrame containing GPS data with columns 'Datetime', 'Lat', 'Lon', and 'Speed'.
+        The first DataFrame containing GPS data with columns 'DateTime', 'Lat', 'Lon', and 'Speed'.
 
     df2 : pd.DataFrame
-        The second DataFrame containing GPS data with columns 'Datetime', 'Lat', 'Lon', and 'Speed'.
+        The second DataFrame containing GPS data with columns 'DateTime', 'Lat', 'Lon', and 'Speed'.
 
     Returns:
     list of tuples
         A list of tuples where each tuple contains:
-        - 'Datetime': The matched datetime.
+        - 'DateTime': The matched datetime.
         - 'Distance (meters)': The calculated distance between two points.
         - 'Lat file1', 'Lon file1': Coordinates of the first GPS file.
         - 'Lat file2', 'Lon file2': Coordinates of the second GPS file.
         - 'Speed file1', 'Speed file2': Speed values from both GPS files.
     """
     df_merged = pd.merge_asof(
-        df1.sort_values("Datetime"),
-        df2.sort_values("Datetime"),
-        on="Datetime",
+        df1.sort_values("DateTime"),
+        df2.sort_values("DateTime"),
+        on="DateTime",
         direction="nearest",
         tolerance=pd.Timedelta("1min"),
     )
@@ -182,7 +182,7 @@ def calculate_distances(df1, df2):
         distance = geodesic(coord1, coord2).meters
         distances.append(
             (
-                row["Datetime"],
+                row["DateTime"],
                 distance,
                 row["Lat_x"],
                 row["Lon_x"],
@@ -326,6 +326,10 @@ def plot_positions(distance_df, coastline, limits, date, args):
     plt.legend()
     plt.grid()
     plt.axis("scaled")
+    print(os.path.join(
+            args.output_path,
+            f"GPS_Plot_{os.path.splitext(os.path.basename(args.file1))[0]}{date}.png",
+        ))
     plt.savefig(
         os.path.join(
             args.output_path,
